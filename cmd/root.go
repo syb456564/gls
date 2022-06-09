@@ -10,10 +10,12 @@ import (
 
 var list bool
 var directory string
+var all bool
 var rootCmd = &cobra.Command{
 	Use:     "gls",
 	Short:   "Show directory lists",
 	Long:    "",
+	Args:    cobra.MaximumNArgs(1),
 	Version: "1.0",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(os.Args) == 1 {
@@ -23,8 +25,8 @@ var rootCmd = &cobra.Command{
 			case "-l":
 				pwd, _ := os.Getwd()
 				listDisplay(pwd)
-			case "-d":
-				listDisplay(os.Args[2])
+			default:
+				listDisplay(os.Args[1])
 			}
 		}
 	},
@@ -40,6 +42,7 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolVarP(&list, "list", "l", false, "")
 	rootCmd.Flags().StringVarP(&directory, "directory", "d", "", "")
+	rootCmd.Flags().BoolVarP(&all, "all", "a", false, "")
 }
 
 func display() {
