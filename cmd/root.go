@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/liushuochen/gotable"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
@@ -12,6 +11,7 @@ import (
 
 var list bool
 var all bool
+var sort int
 var rootCmd = &cobra.Command{
 	Use:     "gls",
 	Short:   "Show directory lists",
@@ -27,6 +27,7 @@ var rootCmd = &cobra.Command{
 				pwd, _ := os.Getwd()
 				listDisplay(pwd)
 			case "-a":
+			case "-s":
 			default:
 				listDisplay(os.Args[1])
 			}
@@ -44,6 +45,7 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolVarP(&list, "list", "l", false, "")
 	rootCmd.Flags().BoolVarP(&all, "all", "a", false, "")
+	rootCmd.Flags().IntVarP(&sort, "sort", "s", 0, "")
 }
 
 func display() {
@@ -61,10 +63,13 @@ func listDisplay(dirname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	table, err := gotable.Create("Name", "directory", "Mode", "LastModifyTime", "Size")
-	if err != nil {
-		fmt.Println("Create table failed: ", err.Error())
-		return
+	fmt.Println("LastModifyTime\t\tDirectory\tMode\t\tSize\tName")
+	for i := range fileInfoList {
+		fmt.Printf("%v\t", fileInfoList[i].ModTime().Format("2006-01-02 15:04:05"))
+		fmt.Printf("%v\t\t", fileInfoList[i].IsDir())
+		fmt.Printf("%v\t", fileInfoList[i].Mode())
+		fmt.Printf("%vKB\t", fileInfoList[i].Size()/1024)
+		fmt.Printf("%v\t\n", fileInfoList[i].Name())
 	}
 	var str = make([]string, 5)
 	for i := range fileInfoList {
@@ -73,7 +78,5 @@ func listDisplay(dirname string) {
 		str[2] = strconv.Itoa(int(fileInfoList[i].Mode()))
 		str[3] = fileInfoList[i].ModTime().Format("2006-01-02 15:04:05")
 		str[4] = strconv.Itoa(int(fileInfoList[i].Size()))
-		table.AddRow(str)
 	}
-	fmt.Println(table)
 }
