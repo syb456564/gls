@@ -2,14 +2,15 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/liushuochen/gotable"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 )
 
 var list bool
-var directory string
 var all bool
 var rootCmd = &cobra.Command{
 	Use:     "gls",
@@ -25,6 +26,7 @@ var rootCmd = &cobra.Command{
 			case "-l":
 				pwd, _ := os.Getwd()
 				listDisplay(pwd)
+			case "-a":
 			default:
 				listDisplay(os.Args[1])
 			}
@@ -41,7 +43,6 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolVarP(&list, "list", "l", false, "")
-	rootCmd.Flags().StringVarP(&directory, "directory", "d", "", "")
 	rootCmd.Flags().BoolVarP(&all, "all", "a", false, "")
 }
 
@@ -60,9 +61,19 @@ func listDisplay(dirname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Name\tdirectory\tMode\t\tLastModifyTime\t\t\t\tsize")
-	for i := range fileInfoList {
-		fmt.Printf("%s\t%v\t\t%s\t%s\t%vKB\n", fileInfoList[i].Name(), fileInfoList[i].IsDir(),
-			fileInfoList[i].Mode(), fileInfoList[i].ModTime(), fileInfoList[i].Size()/1024)
+	table, err := gotable.Create("Name", "directory", "Mode", "LastModifyTime", "Size")
+	if err != nil {
+		fmt.Println("Create table failed: ", err.Error())
+		return
 	}
+	var str = make([]string, 5)
+	for i := range fileInfoList {
+		str[0] = fileInfoList[i].Name()
+		str[1] = strconv.FormatBool(fileInfoList[i].IsDir())
+		str[2] = strconv.Itoa(int(fileInfoList[i].Mode()))
+		str[3] = fileInfoList[i].ModTime().Format("2006-01-02 15:04:05")
+		str[4] = strconv.Itoa(int(fileInfoList[i].Size()))
+		table.AddRow(str)
+	}
+	fmt.Println(table)
 }
