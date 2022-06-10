@@ -17,6 +17,6 @@ var treeCmd = &cobra.Command{
 }
 
 func init() {
-	treeCmd.Flags().IntVarP(&length, "length", "L", 3, "")
+	treeCmd.Flags().IntVarP(&length, "length", "L", 3, "以树形展示目录结构，树的默认深度为3")
 	rootCmd.AddCommand(treeCmd)
 }

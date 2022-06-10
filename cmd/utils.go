@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+//列出文件信息，同时根据文件类型使用不同颜色区别显示，对文件大小使用指定单位
 func myUnitPrint(fileInfoList []fs.FileInfo, unit string) {
 	var rate float64
 	if unit == "B" {
@@ -37,6 +38,8 @@ func myUnitPrint(fileInfoList []fs.FileInfo, unit string) {
 		}
 	}
 }
+
+//列出当前目录下的文件
 func display() {
 	pwd, _ := os.Getwd()
 	fileInfoList, err := ioutil.ReadDir(pwd)
@@ -47,6 +50,8 @@ func display() {
 		fmt.Println(fileInfoList[i].Name())
 	}
 }
+
+//列表形式展示当前目录下文件清单及文件类型、大小等信息
 func listDisplay(dirname string) {
 	fileInfoList, err := ioutil.ReadDir(dirname)
 	if err != nil {
@@ -55,6 +60,7 @@ func listDisplay(dirname string) {
 	myUnitPrint(fileInfoList, "K")
 }
 
+//显示隐藏文件信息
 func allDisplay() {
 	pwd, _ := os.Getwd()
 	fileInfoList, err := ioutil.ReadDir(pwd)
@@ -76,7 +82,8 @@ func allDisplay() {
 	}
 }
 
-func sortDisplay(sortOrder string) { //1代表按修改时间排序,2代表按文件大小排序,3代表按文件名排序,order为true代表升序,false代表降序
+//根据指定参数值对展示列表进行排序
+func sortDisplay(sortOrder string) {
 	pwd, _ := os.Getwd()
 	fileInfoList, err := ioutil.ReadDir(pwd)
 	if err != nil {
@@ -140,6 +147,7 @@ func sortDisplay(sortOrder string) { //1代表按修改时间排序,2代表按�
 	}
 }
 
+//根据指定参数使用不同单位显示文件大小信息
 func unitDisplay(unit string) {
 	pwd, _ := os.Getwd()
 	fileInfoList, err := ioutil.ReadDir(pwd)
@@ -158,6 +166,7 @@ func unitDisplay(unit string) {
 	}
 }
 
+//以树形展示目录结构
 func treeDisplay(dir string, l int) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -182,16 +191,15 @@ func treeDisplay(dir string, l int) {
 	}
 }
 
+//以树形展示目录结构
 func treePrint(l int, fileName string) {
+	var treeFormat string
+	for i := 0; i < (l-1)*3+2; i++ {
+		treeFormat += " "
+	}
 	if l == 0 {
 		fmt.Printf("|—— %v\n", fileName)
-	} else if l == 1 {
-		fmt.Printf("|  |—— %v\n", fileName)
-	} else if l == 2 {
-		fmt.Printf("|     |—— %v\n", fileName)
-	} else if l == 3 {
-		fmt.Printf("|        |—— %v\n", fileName)
 	} else {
-		fmt.Printf("|        |—— %v\n", fileName)
+		fmt.Printf("|%s|—— %v\n", treeFormat, fileName)
 	}
 }
